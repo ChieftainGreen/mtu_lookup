@@ -1,11 +1,16 @@
 '''
-requires ping
-requires ip utility on Linux or netsh utility on Windows.
+Script to check network MTU / detect blackhole / check system PMTUD cache
 
 HOW TO RUN:
-python mtu_probe.py <ip or hostname>
+python3 mtu_probe.py <ip or hostname> - Linux
+python3 mtu_probe.py <ip or hostname> - Windows
 
-this version is using system 'ping' utility.
+For icecream debug output, run:
+pip install icecream //(or pip3...)
+and comment the "HAVE_IC = False" line
+
+
+This version is using system 'ping' utility. Why?
 PRO:
 available without root/admin
 available without other Python modules or ext programs [i.e. scapy requires Npcap on windows]
@@ -15,22 +20,27 @@ no reliable errorcode
 windows version may be localized
 Linux version
 
+Also, it requires "ip" utility on Linux or "netsh" utility on Windows.
+
+
 #TODO
 #Jumbo Frames
 #resolve problem with hostname containing "ttl" substring
-
+#colored Rich version
 
 '''
 import platform
 import subprocess
 import sys
+
+#let's check if we have icecream. If no - no debug output only, no worries.
 try:
     from icecream import ic
     HAVE_IC = True
 except ImportError:
-    HAVE_IC = False
-
+    pass
 HAVE_IC = False #uncomment for debug output
+
 
 VERSION = "0.1"
 encodings_to_try = ['cp866', 'utf-8', 'utf-16', 'cp1251']
@@ -74,12 +84,16 @@ def try_decoding_with_multiple_encodings(byte_string, encodings):
 def parse_ping(pingoutput,server):
     '''get ping output strings from CLI and find info these'''
     #this version does not cover possible ping outputs:
-    #   ttl expired during reassembly, no route to host, redirect
+    # at least,  ttl expired during reassembly,
+    # also untested -  no route to host, redirect
     # and probable some other
 
     #acutally i need only to skip first blank line (windows)
     #then skip start string
     #and the 2nd or 3rd string is the ping output
+    #TODO
+    #make better code for whole splitlines array analyze
+
     linelist=pingoutput.splitlines()
     for line in linelist:
         #ic(line)
