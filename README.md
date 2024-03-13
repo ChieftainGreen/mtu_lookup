@@ -2,6 +2,8 @@
 
 Script to check network MTU, detect blackhole, and check system PMTUD cache using standard Python libraries. Icecream output is optional.
 
+![Alt text](image.png)
+
 Required system utilities:
 - `ping` utility
 - `ip` utility on Linux
